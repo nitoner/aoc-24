@@ -41,25 +41,43 @@ func abs(value int) int {
     return value
 }
 
-func solve(lefts []int, rights []int) int {
+func solvePartOne(lefts, rights []int) int {
     sum := 0
-    var left, right int
     sort.Sort(sort.IntSlice(lefts))
     sort.Sort(sort.IntSlice(rights))
-    for len(lefts) > 0 && len(rights) > 0 {
-        left, lefts = lefts[0], lefts[1:]
-        right, rights = rights[0], rights[1:]
-        sum += abs(left - right) 
+    for i := 0; i < len(lefts); i++ {
+        sum += abs(lefts[i] - rights[i])
     }
     return sum
 }
 
+func count(n int, elems []int,) int {
+    count := 0
+    for _, val := range elems {
+        if val == n {
+            count++
+        } 
+    }
+    return count
+}
+
+func solvePartTwo(lefts, rights []int) int {
+    sum := 0
+    for i := 0; i < len(lefts); i++ {
+        sum += lefts[i] * count(lefts[i], rights)
+    }
+    return sum
+}
 
 func main() {
     data := read("input.txt")
     lefts, rights := parse(data)
-    answer := solve(lefts, rights)
+    partOneAnswer := solvePartOne(lefts, rights)
     
     // Part 1
-    fmt.Println(answer)  
+    fmt.Println(partOneAnswer)
+
+    //Part 2
+    partTwoAnswer := solvePartTwo(lefts, rights)
+    fmt.Println(partTwoAnswer)
 }
