@@ -4,41 +4,22 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"os"
     "sort"
+    "aoc-24/src/utils"
 )
-
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
-}
-
-func read(file string) string {
-    data, err := os.ReadFile(file) 
-    check(err)
-    return string(data)
-}
 
 func parse(data string) ([]int, []int) {
     nums := strings.Fields(string(data))
     var lefts, rights []int
     for i := 0; i < len(nums); i += 2 {
         left, err := strconv.Atoi(nums[i])
-        check(err)
+        utils.Check(err)
         lefts = append(lefts, left)
         right, err := strconv.Atoi(nums[i + 1])
-        check(err)
+        utils.Check(err)
         rights = append(rights, right)
     }
     return lefts, rights
-}
-
-func abs(value int) int {
-    if value < 0 {
-        return -value
-    }
-    return value
 }
 
 func solvePartOne(lefts, rights []int) int {
@@ -46,7 +27,7 @@ func solvePartOne(lefts, rights []int) int {
     sort.Sort(sort.IntSlice(lefts))
     sort.Sort(sort.IntSlice(rights))
     for i := 0; i < len(lefts); i++ {
-        sum += abs(lefts[i] - rights[i])
+        sum += utils.Abs(lefts[i] - rights[i])
     }
     return sum
 }
@@ -70,7 +51,7 @@ func solvePartTwo(lefts, rights []int) int {
 }
 
 func main() {
-    data := read("input.txt")
+    data := utils.ReadFile("input.txt")
     lefts, rights := parse(data)
     partOneAnswer := solvePartOne(lefts, rights)
     
