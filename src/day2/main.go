@@ -33,47 +33,59 @@ func order(levels []int) Order {
     return Ascending
 }
 
-func isSafe(report Report) bool {
+func isSafe(report *Report) bool {
     if report.order == Ascending {
         for i := 1; i < len(report.levels); i++ {
             gap := report.levels[i] - report.levels[i - 1]
             if gap > 3 || gap < 1 {
                 report.unsafeIdx = append(report.unsafeIdx, i - 1)
-                report.unsafeIdx = append(report.unsafeIdx, i)
                 return false
             }
         }
     } else {
-        for i := 0; i < len(report.levels) - 1; i++ {
+        for i := len(report.levels) - 2; i >= 0; i-- {
             gap := report.levels[i] - report.levels[i + 1]
             if gap > 3 || gap < 1 {
                 report.unsafeIdx = append(report.unsafeIdx, i)
-                report.unsafeIdx = append(report.unsafeIdx, i + 1)
                 return false
             }
-        }
+        } 
     }
     return true 
 }
 
-func solvePartOne(reports []Report) int {
+func solvePartOne(reports *[]Report) int {
     count := 0
-    for _, report := range reports {
-        if isSafe(report) {
+    for i := range *reports {
+        if isSafe(&(*reports)[i]) {
             count++
         }
     }
     return count
 }
 
-func solvePartTwo(reports []Report) int {
-    count := 0
-
-    for _, report := range reports {
-        tempReport := Report{copy(report.levels), report.unsafeIdx, report.order}
-        copy() 
+func isSafeButNotReally(report Report) bool {
+    if len(report.unsafeIdx) == 1 {
+        tempReport := Report{[]int{}, []int{}, report.order}
+        copy(tempReport.levels, report.levels)
+        fmt.Println(tempReport)
+        tempReport.levels = append(tempReport.levels[:report.unsafeIdx[0]], tempReport.levels[report.unsafeIdx[0] + 1:]...)
+        fmt.Println(tempReport.levels)
+        if isSafe(&tempReport) {
+            return true
+        }
     }
-    return count++
+    return false
+}
+
+func solvePartTwo(reports *[]Report) int {
+    count := 0
+    for _, report := range *reports {
+        if isSafeButNotReally(report) {
+            count++
+        }
+    }
+    return count
 }
 
 func parse(file *os.File) []Report {
@@ -97,13 +109,14 @@ func parse(file *os.File) []Report {
 }
 
 func main() {
-    file, err := os.Open("input.txt")
+    file, err := os.Open("example.txt")
     utils.Check(err)
     defer file.Close()
     reports := parse(file)
-    numOfSafeReportsPartOne := solvePartOne(reports)
-    fmt.Println(numOfSafeReports)
-    numOfSafeReportsPartTwo := solvePartTwo(reports)
+    numOfSafeReportsPartOne := solvePartOne(&reports)
+    fmt.Println(reports)
+    fmt.Println(numOfSafeReportsPartOne)
+    numOfSafeReportsPartTwo := solvePartTwo(&reports)
     totalOfSageReports := numOfSafeReportsPartOne + numOfSafeReportsPartTwo
     fmt.Println(totalOfSageReports)
 }
