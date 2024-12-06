@@ -22,6 +22,7 @@ const (
 
 type Report struct {
     levels []int
+    unsafeIdx []int
     order Order
 }
 
@@ -37,6 +38,8 @@ func isSafe(report Report) bool {
         for i := 1; i < len(report.levels); i++ {
             gap := report.levels[i] - report.levels[i - 1]
             if gap > 3 || gap < 1 {
+                report.unsafeIdx = append(report.unsafeIdx, i - 1)
+                report.unsafeIdx = append(report.unsafeIdx, i)
                 return false
             }
         }
@@ -44,6 +47,8 @@ func isSafe(report Report) bool {
         for i := 0; i < len(report.levels) - 1; i++ {
             gap := report.levels[i] - report.levels[i + 1]
             if gap > 3 || gap < 1 {
+                report.unsafeIdx = append(report.unsafeIdx, i)
+                report.unsafeIdx = append(report.unsafeIdx, i + 1)
                 return false
             }
         }
@@ -61,6 +66,16 @@ func solvePartOne(reports []Report) int {
     return count
 }
 
+func solvePartTwo(reports []Report) int {
+    count := 0
+
+    for _, report := range reports {
+        tempReport := Report{copy(report.levels), report.unsafeIdx, report.order}
+        copy() 
+    }
+    return count++
+}
+
 func parse(file *os.File) []Report {
     var reports []Report
     scanner := bufio.NewScanner(file)
@@ -76,7 +91,7 @@ func parse(file *os.File) []Report {
             utils.Check(err) 
             levels = append(levels, level)
         }
-        reports = append(reports, Report{levels, order(levels)})
+        reports = append(reports, Report{levels, []int{}, order(levels)})
     }
     return reports
 }
@@ -86,6 +101,9 @@ func main() {
     utils.Check(err)
     defer file.Close()
     reports := parse(file)
-    numOfSafeReports := solvePartOne(reports)
+    numOfSafeReportsPartOne := solvePartOne(reports)
     fmt.Println(numOfSafeReports)
+    numOfSafeReportsPartTwo := solvePartTwo(reports)
+    totalOfSageReports := numOfSafeReportsPartOne + numOfSafeReportsPartTwo
+    fmt.Println(totalOfSageReports)
 }
